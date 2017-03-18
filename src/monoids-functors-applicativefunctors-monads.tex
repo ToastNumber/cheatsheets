@@ -1,0 +1,86 @@
+\documentclass[12pt, twocolumn]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{minted}
+\usepackage{csquotes}
+\usepackage{xcolor}
+\usepackage{mdframed}
+
+\title{\vspace{-4cm}Monoids, Functors, Applicative Functors, Monads}
+\author{Kelsey McKenna}
+\date{}
+\begin{document}
+\pagenumbering{gobble}
+\maketitle
+
+\section*{Monoid}
+
+\subsection*{Definition}
+\begin{minted}{haskell}
+class Monoid m where
+  mempty  :: m
+  mappend :: m -> m -> m
+
+  mconcat :: [m] -> m
+  mconcat ms = foldr mappend mempty
+\end{minted}
+
+\subsection*{Rules}
+\begin{minted}{haskell}
+mempty <> x   = x
+x <> mempty   = x
+(x <> y) <> z = x <> (y <> z)
+\end{minted}
+
+\section*{Functor}
+
+\subsection*{Definition}
+\begin{minted}{haskell}
+class Functor m where
+  fmap :: (a -> b) -> m a -> m b
+\end{minted}
+
+\subsection*{Rules}
+\begin{minted}{haskell}
+fmap id = id
+fmap (g . f) = fmap g . fmap f
+\end{minted}
+
+\newpage
+
+\section*{Applicative Functor}
+
+\subsection*{Definition}
+\begin{minted}{haskell}
+class ApplicativeFunctor m where
+  pure :: a -> m a
+  <*>  :: m (a -> b) -> m a -> m b
+\end{minted}
+
+\subsection*{Rules}
+The only `interesting' rule is:
+\begin{minted}{haskell}
+fmap f x = pure f <*> x
+\end{minted}
+
+\section*{Monad}
+
+\subsection*{Definition}
+\begin{minted}{haskell}
+class Monad m where
+  return :: a -> m a
+  (>>=) :: m a -> (a -> m b) -> m b
+
+  (>>) :: m a -> m b -> m b
+  m a >> m b = m a >>= \_ -> m b
+\end{minted}
+
+\subsection*{Rules}
+\begin{minted}{haskell}
+return a >>= f = f a
+m >>= return = m
+(m >>= f) >>= g = 
+    m >>= (\x -> f x >>= g)
+\end{minted}
+
+\end{document}
+
